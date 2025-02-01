@@ -1,7 +1,5 @@
 import time
-
 import requests
-from platformdirs import user_data_path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import json
@@ -9,7 +7,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from streamlit import video
 from selenium.webdriver.chrome.options import Options
 import pandas as pd
-
 def load_image(url):
     response = requests.get(url)
     img_name= url.split('/')[-1]
@@ -49,11 +46,11 @@ def crawle(url,cookies):
         witchnum= witchnum_timelength[0].text
         timelength= witchnum_timelength[1].text
         title= video_element.find_element(By.CLASS_NAME, 'Card1_ccon_1gZ2p').find_element(By.TAG_NAME, 'div').text
+        likes=video_element.find_element(By.CLASS_NAME,'Card1_cct3_3gtSF').find_elements(By.TAG_NAME, 'span')[-1].text
         img_name,img_load =load_image(img_url)
         print(title+'已处理')
-        videos_info.append([title,witchnum,timelength,img_name,img_url,img_load])
+        videos_info.append([title,witchnum,timelength,likes,img_name,img_url,img_load])
     return videos_info
-
 # 打开并读取JSON文件
 with open('cookie.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
@@ -74,5 +71,4 @@ urls=['https://weibo.com/u/3905458630?tabtype=newVideo',
 result=[]
 for url in urls:
     result+=crawle(url,cookies)
-pd.DataFrame(result,columns=['title','witchnum','timelength','img_name','img_url','img_load']).to_excel('weibo.xlsx',index=False)
-
+pd.DataFrame(result,columns=['title','witchnum','timelength','likes','img_name','img_url','img_load']).to_excel('weibo1.31.xlsx',index=False)

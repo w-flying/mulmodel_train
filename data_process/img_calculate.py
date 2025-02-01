@@ -44,16 +44,25 @@ def calculate_image_quality(image):
     return score
 
 
-img_files = os.listdir("images")
+def evaluate_contrast(image):
+    # 转换为灰度图像
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # 计算对比度
+    contrast = np.std(gray)
+    return contrast
+
+
+img_files = os.listdir("../images")
 cbq=[]
 for img_file in img_files:
-    image_path = os.path.join("images", img_file)
+    image_path = os.path.join("../images", img_file)
     image = cv2.imread(image_path)
     try:
         colorfulness = calculate_colorfulness(image)
         brightness = calculate_brightness(image)
         quality = calculate_image_quality(image)
-        cbq.append([img_file, colorfulness, brightness, quality])
+        contrast = evaluate_contrast(image)
+        cbq.append([img_file, colorfulness, brightness, quality, contrast])
     except:
         cbq.append([img_file, -1, -1, -1])
-pd.DataFrame(cbq, columns=['image', 'colorfulness', 'brightness', 'quality']).to_excel('color_bright_quality.xlsx', index=False)
+pd.DataFrame(cbq, columns=['image', 'colorfulness', 'brightness', 'quality','contrast']).to_excel('Picture_features.xlsx', index=False)
