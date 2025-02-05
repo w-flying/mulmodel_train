@@ -49,21 +49,19 @@ plt.savefig("witchnum_distribution.png")
 X = data_clean.drop(columns=["witchnum"])
 y = y_log  # 使用已验证的对数转换
 
-# 特征选择（基于初步重要性）
+
 # 创建随机森林回归模型
 base_model = RandomForestRegressor(n_estimators=100, random_state=42)
 # 训练模型
 base_model.fit(X, y)
-# 创建特征选择器
 # 计算特征重要性得分
 importances = base_model.feature_importances_
 # 按重要性得分排序
 sorted_indices = np.argsort(importances)[::-1]
-# 计算前 70% 的特征数量
+# 计算前 80% 的特征数量
 num_features = int(len(importances) * 0.8)
-# 获取前 70% 特征的最小重要性得分作为阈值
+# 获取前 80% 特征的最小重要性得分作为阈值
 threshold = importances[sorted_indices[num_features - 1]]
-
 
 selector = SelectFromModel(base_model, prefit=True, threshold=threshold)
 # 对特征进行选择

@@ -3,9 +3,6 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import json
-from selenium.webdriver.common.action_chains import ActionChains
-from streamlit import video
-from selenium.webdriver.chrome.options import Options
 import pandas as pd
 def load_image(url):
     response = requests.get(url)

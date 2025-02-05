@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import pandas as pd
@@ -8,12 +9,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # 读取数据
-df = pd.read_excel('../all_data.xlsx')
-
-X = df[['colorfulness', 'brightness', 'quality', 'contrast','similarity',
-        'timelength', 'topic_complexity', 'emoji_num', 'likes']]
-y = df['witchnum']
-y = y / 1000
+data_clean = pd.read_excel('../all_data.xlsx')
+# 筛选witchnum大于0且小于第95百分位数的数据
+data_clean = data_clean[(data_clean["witchnum"] > 0) & (data_clean["witchnum"] < data_clean["witchnum"].quantile(0.95))]
+# X = df[['colorfulness', 'brightness', 'quality', 'contrast','similarity',
+#         'timelength', 'topic_complexity', 'emoji_num', 'likes']]
+X=data_clean[['topic_complexity', 'similarity', 'timelength', 'likes', 'OC', 'colorfulness', 'brightness', 'contrast']]
+y = data_clean['witchnum']
+y =np.log(y)
 
 # 划分训练集和测试集
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -36,7 +39,7 @@ def evaluate_negative_binomial_model(X_train, y_train, X_test, y_test):
     X_test_with_const = sm.add_constant(X_test)
 
     model = sm.NegativeBinomial(y_train, X_train_with_const)
-    result = model.fit()
+    result = model.fit(maxiter=100)
     y_pred = result.predict(X_test_with_const)
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
@@ -96,6 +99,13 @@ def forward_selection_model():
     mse_forward, r2_forward, result_forward = evaluate_negative_binomial_model(X_train_forward, y_train, X_test_forward, y_test)
     print(f"向前选择后模型的均方误差 (MSE): {mse_forward}")
     print(f"向前选择后模型的决定系数 (R^2): {r2_forward}")
+    # 获取最终选择特征的 p 值
+    feature_names_with_const = ['const'] + forward_selected_features
+    p_values = result_forward.pvalues
+    print("\n最终选择的特征及其 p 值：")
+    for feature, p_value in zip(feature_names_with_const, p_values):
+        print(f'{feature}: {p_value}')
+
     return [X_train_forward, y_train, X_test_forward, y_test, result_forward]
 
 def backward_selection_model():

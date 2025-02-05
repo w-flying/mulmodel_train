@@ -7,12 +7,14 @@ import numpy as np
 
 # 读取数据
 df = pd.read_excel('../all_data.xlsx')
-
+#
+# # 划分自变量和因变量
+# X = df[['colorfulness', 'brightness', 'quality', 'contrast', 'similarity',
+#         'timelength', 'topic_complexity', 'emoji_num','likes']]
 # 划分自变量和因变量
-X = df[['colorfulness', 'brightness', 'quality', 'contrast', 'similarity',
-        'timelength', 'topic_complexity', 'emoji_num','likes']]
+X = df[['topic_complexity', 'similarity', 'timelength', 'likes', 'OC', 'colorfulness', 'brightness', 'contrast']]
 y = df['witchnum']
-
+y=np.log(y)
 
 # 划分训练集和测试集
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=10)

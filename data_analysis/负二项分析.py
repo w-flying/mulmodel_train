@@ -9,8 +9,7 @@ import numpy as np
 df = pd.read_excel('../all_data.xlsx')
 
 #划分自变量和因变量
-X = df[['EC', 'OC', 'colorfulness', 'brightness', 'quality','contrast','similarity',
-        'timelength', 'topic_complexity', 'emoji_num','likes']]
+X = df[['topic_complexity', 'similarity', 'timelength', 'likes', 'OC', 'colorfulness', 'brightness', 'contrast']]
 y = df['witchnum']
 y=y/1000
 # 划分自变量和因变量
